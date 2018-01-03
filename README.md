@@ -7,5 +7,5 @@ How to use
   - use :)
 
 # Usage
-xmysqldump -f filename.sql -d database_to_import_in -u mysql_user -p mysql_password -h mysqlhost
+xmysqldump -f ./filename.sql -d database_to_import_in -u mysql_user -p mysql_password -h mysqlhost
   - usually mysql host is localhost/127.0.0.1 if working on development environment
