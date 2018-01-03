@@ -2,7 +2,7 @@
 
 xmysqlimport is small shell script based utility to help you import large databases. This is simple setting of a few MYSQL/MARIADB variable set and execute import.
 How to use
-  - download this repo as zip and extract
+  - download this repo as zip and extract or clone
   - copy xmysqlimport to /usr/local/bin to make it globally available
   - make script executable by running "chmod +x /usr/local/bin/xmysqlimport"
   - use :)
