@@ -1,0 +1,74 @@
+#!/bin/sh
+# store start date to a variable
+
+while getopts f:d:u:p:h: option
+do
+ case "${option}"
+ in
+ f) FILEPATH=${OPTARG};;
+ d) DATABASE=${OPTARG};;
+ u) MYSQLUSER=${OPTARG};;
+ p) MYSQLPASSWORD=${OPTARG};;
+ h) MYSQLHOST=${OPTARG};;
+ esac
+done
+
+if [ -z "$FILEPATH" ]
+then
+	echo "Please specify '-f /absolute/path/of/sql/file' option"
+	exit
+fi
+
+if [ -z "$DATABASE" ]
+then
+        echo "Please specify '-d my_database' option"
+        exit
+fi
+
+
+if [ -z "$MYSQLUSER" ]
+then
+        echo "Please specify '-u mysql_user' option"
+        exit
+fi
+
+
+if [ -z "$MYSQLPASSWORD" ]
+then
+        echo "Please specify '-p mysql_password' option"
+        exit
+fi
+
+if [ -z "$MYSQLHOST" ]
+then
+        echo "Please specify '-h 127.0.0.1' or mysql host"
+        exit
+fi
+
+$FILEPATH =  "$(cd "$(dirname "$FILEPATH")"; pwd)/$(basename "$FILEPATH")"
+
+imeron=`date`
+echo "Import started: OK"
+
+dumpfile=$FILEPATH
+databasename=$DATABASE
+
+ddl="set names utf8; "
+ddl="$ddl set global net_buffer_length=1048576;"
+ddl="$ddl set global max_allowed_packet=1073741824; "
+ddl="$ddl SET foreign_key_checks = 0; "
+ddl="$ddl SET UNIQUE_CHECKS = 0; "
+ddl="$ddl SET AUTOCOMMIT = 0; "
+# if your dump file does not create a database, select one
+ddl="$ddl USE $databasename; "
+ddl="$ddl source $dumpfile; "
+ddl="$ddl SET foreign_key_checks = 1; "
+ddl="$ddl SET UNIQUE_CHECKS = 1; "
+ddl="$ddl SET AUTOCOMMIT = 1; "
+ddl="$ddl COMMIT ; "
+echo "Import started: OK"
+time mysql -h $MYSQLHOST -u $MYSQLUSER -p$MYSQLPASSWORD -e "$ddl"
+# store end date to a variable
+imeron2=`date`
+echo "Start import:$imeron"
+echo "End import:$imeron2"
