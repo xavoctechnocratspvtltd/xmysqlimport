@@ -1,7 +1,7 @@
 #!/bin/sh
 # store start date to a variable
 
-while getopts f:d:u:p:h: option
+while getopts f:d:u:p:h:P: option
 do
  case "${option}"
  in
@@ -10,6 +10,7 @@ do
  u) MYSQLUSER=${OPTARG};;
  p) MYSQLPASSWORD=${OPTARG};;
  h) MYSQLHOST=${OPTARG};;
+ P) MYSQLPORT=${OPTARG};; # Added line for port
  esac
 done
 
@@ -45,7 +46,14 @@ then
         exit
 fi
 
+if [ -z "$MYSQLPORT" ]
+then
+        echo "Please specify '-P mysql_port' option"
+        exit
+fi
+
 $FILEPATH =  "$(cd "$(dirname "$FILEPATH")"; pwd)/$(basename "$FILEPATH")"
+
 
 imeron=`date`
 echo "Import started: OK"
@@ -67,7 +75,9 @@ ddl="$ddl SET UNIQUE_CHECKS = 1; "
 ddl="$ddl SET AUTOCOMMIT = 1; "
 ddl="$ddl COMMIT ; "
 echo "Import started: OK"
-time mysql -h $MYSQLHOST -u $MYSQLUSER -p$MYSQLPASSWORD -e "$ddl"
+
+time mysql -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD -e "$ddl"
+
 # store end date to a variable
 imeron2=`date`
 echo "Start import:$imeron"
